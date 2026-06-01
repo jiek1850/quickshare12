@@ -1,0 +1,51 @@
+{
+  "name": "quickshare12",
+  "version": "2.0.0",
+  "description": "HTML/Markdown/SVG/Mermaid 分享工具，支持 Cloudflare Workers、R2 和 D1 一键部署",
+  "type": "module",
+  "main": "src/worker.js",
+  "scripts": {
+    "start": "wrangler dev --local",
+    "dev": "wrangler dev --local",
+    "check": "wrangler deploy --dry-run",
+    "capture:screenshots": "node scripts/capture-readme-screenshots.mjs",
+    "deploy": "npm run db:migrate:remote && wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:remote": "wrangler d1 migrations apply DB --remote"
+  },
+  "keywords": [
+    "html",
+    "share",
+    "cloudflare-workers",
+    "r2",
+    "d1"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "marked": "^15.0.7"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0",
+    "wrangler": "^4.93.0"
+  },
+  "cloudflare": {
+    "bindings": {
+      "DB": {
+        "description": "D1 数据库，用于保存分享页元数据、密码保护状态和 R2 对象 key。"
+      },
+      "CONTENT_BUCKET": {
+        "description": "R2 存储桶，用于保存用户分享的 HTML/Markdown/SVG/Mermaid 原始内容。"
+      },
+      "AUTH_ENABLED": {
+        "description": "设置为 `true` 时开启首页和创建接口访问密码；默认 `false`。"
+      },
+      "AUTH_PASSWORD": {
+        "description": "登录访问密码。部署后建议在 Cloudflare 控制台改成你自己的强密码。"
+      },
+      "COOKIE_SECRET": {
+        "description": "用于签名登录 Cookie 的随机字符串。建议使用 `openssl rand -hex 32` 生成。"
+      }
+    }
+  }
+}
